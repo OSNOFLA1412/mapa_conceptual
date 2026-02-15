@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa Conceptual - Ejes Articuladores NEM</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #1a1a4e, #24243e);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px 20px;
+            color: #fff;
+        }
+        h1 {
+            font-size: 1.6rem;
+            text-align: center;
+            margin-bottom: 5px;
+            background: linear-gradient(90deg, #fff, #88ccff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .subtitle {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.4);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        /* MAPA */
+        .mapa {
+            position: relative;
+            width: 900px;
+            height: 820px;
+        }
+
+        /* SVG conexiones */
+        .conexiones-svg {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 1;
+        }
+        .conexiones-svg line {
+            stroke: rgba(255,255,255,0.08);
+            stroke-width: 1.5;
+        }
+        .conexiones-svg .linea-fuerte {
+            stroke: rgba(255,255,255,0.15);
+            stroke-width: 2;
+            stroke-dasharray: 6 4;
+        }
+
+        /* CENTRO */
+        .centro {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 170px; height: 170px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(77,150,255,0.3), rgba(77,150,255,0.05));
+            border: 3px solid rgba(77,150,255,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            z-index: 10;
+            box-shadow: 0 0 40px rgba(77,150,255,0.2);
+        }
+        .centro .icon { font-size: 2rem; }
+        .centro h2 { font-size: 0.75rem; font-weight: 700; line-height: 1.3; margin-top: 4px; }
+        .centro p { font-size: 0.55rem; color: rgba(255,255,255,0.5); margin-top: 2px; }
+
+        /* NODO EJE */
+        .nodo {
+            position: absolute;
+            width: 155px;
+            border-radius: 16px;
+            padding: 14px 12px;
+            text-align: center;
+            z-index: 10;
+            backdrop-filter: blur(8px);
+            border: 1.5px solid;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .nodo:hover {
+            transform: scale(1.08);
+            z-index: 20;
+        }
+        .nodo .n-icon { font-size: 1.6rem; margin-bottom: 4px; }
+        .nodo h3 { font-size: 0.7rem; font-weight: 700; line-height: 1.2; margin-bottom: 3px; }
+        .nodo p { font-size: 0.55rem; line-height: 1.3; opacity: 0.7; }
+
+        /* Colores individuales */
+        .n-inclusion {
+            top: 60px; left: 50%; transform: translateX(-50%);
+            background: rgba(255,107,107,0.12);
+            border-color: rgba(255,107,107,0.5);
+        }
+        .n-inclusion h3 { color: #ff6b6b; }
+        .n-inclusion:hover { box-shadow: 0 0 30px rgba(255,107,107,0.3); }
+
+        .n-critico {
+            top: 180px; right: 30px;
+            background: rgba(255,217,61,0.12);
+            border-color: rgba(255,217,61,0.5);
+        }
+        .n-critico h3 { color: #ffd93d; }
+        .n-critico:hover { box-shadow: 0 0 30px rgba(255,217,61,0.3); }
+
+        .n-interculturalidad {
+            top: 420px; right: 10px;
+            background: rgba(107,203,119,0.12);
+            border-color: rgba(107,203,119,0.5);
+        }
+        .n-interculturalidad h3 { color: #6bcb77; }
+        .n-interculturalidad:hover { box-shadow: 0 0 30px rgba(107,203,119,0.3); }
+
+        .n-genero {
+            bottom: 85px; right: 120px;
+            background: rgba(168,85,247,0.12);
+            border-color: rgba(168,85,247,0.5);
+        }
+        .n-genero h3 { color: #c084fc; }
+        .n-genero:hover { box-shadow: 0 0 30px rgba(168,85,247,0.3); }
+
+        .n-salud {
+            bottom: 85px; left: 120px;
+            background: rgba(77,150,255,0.12);
+            border-color: rgba(77,150,255,0.5);
+        }
+        .n-salud h3 { color: #4d96ff; }
+        .n-salud:hover { box-shadow: 0 0 30px rgba(77,150,255,0.3); }
+
+        .n-lectura {
+            top: 420px; left: 10px;
+            background: rgba(240,147,251,0.12);
+            border-color: rgba(240,147,251,0.5);
+        }
+        .n-lectura h3 { color: #f093fb; }
+        .n-lectura:hover { box-shadow: 0 0 30px rgba(240,147,251,0.3); }
+
+        .n-artes {
+            top: 180px; left: 30px;
+            background: rgba(67,233,123,0.12);
+            border-color: rgba(67,233,123,0.5);
+        }
+        .n-artes h3 { color: #43e97b; }
+        .n-artes:hover { box-shadow: 0 0 30px rgba(67,233,123,0.3); }
+
+        /* Etiquetas de conexión */
+        .etiqueta {
+            position: absolute;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 5px 9px;
+            font-size: 0.48rem;
+            color: rgba(255,255,255,0.45);
+            z-index: 5;
+            text-align: center;
+            max-width: 120px;
+            line-height: 1.3;
+            pointer-events: none;
+        }
+
+        .footer-note {
+            margin-top: 25px;
+            font-size: 0.65rem;
+            color: rgba(255,255,255,0.25);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Ejes Articuladores de la Nueva Escuela Mexicana</h1>
+<p class="subtitle">Plan de Estudios 2022 · Mapa de conexiones transversales</p>
+
+<div class="mapa">
+
+    <!-- SVG LÍNEAS DE CONEXIÓN -->
+    <svg class="conexiones-svg" viewBox="0 0 900 820">
+        <!-- Centro a cada nodo -->
+        <line x1="450" y1="410" x2="450" y2="130" class="linea-fuerte"/>
+        <line x1="450" y1="410" x2="770" y2="240" class="linea-fuerte"/>
+        <line x1="450" y1="410" x2="790" y2="480" class="linea-fuerte"/>
+        <line x1="450" y1="410" x2="640" y2="700" class="linea-fuerte"/>
+        <line x1="450" y1="410" x2="260" y2="700" class="linea-fuerte"/>
+        <line x1="450" y1="410" x2="100" y2="480" class="linea-fuerte"/>
+        <line x1="450" y1="410" x2="120" y2="240" class="linea-fuerte"/>
+
+        <!-- Conexiones cruzadas -->
+        <!-- Inclusión - Género -->
+        <line x1="400" y1="130" x2="640" y2="690"/>
+        <!-- Inclusión - Interculturalidad -->
+        <line x1="500" y1="130" x2="780" y2="470"/>
+        <!-- Crítico - Lectura -->
+        <line x1="760" y1="250" x2="110" y2="470"/>
+        <!-- Crítico - Artes -->
+        <line x1="740" y1="230" x2="140" y2="230"/>
+        <!-- Interculturalidad - Artes -->
+        <line x1="780" y1="490" x2="130" y2="250"/>
+        <!-- Género - Salud -->
+        <line x1="620" y1="710" x2="280" y2="710"/>
+        <!-- Salud - Artes -->
+        <line x1="240" y1="690" x2="110" y2="260"/>
+        <!-- Lectura - Interculturalidad -->
+        <line x1="130" y1="460" x2="770" y2="460"/>
+        <!-- Inclusión - Salud -->
+        <line x1="420" y1="130" x2="250" y2="690"/>
+        <!-- Género - Crítico -->
+        <line x1="660" y1="690" x2="770" y2="260"/>
+    </svg>
+
+    <!-- CENTRO NEM -->
+    <div class="centro">
+        <div>
+            <div class="icon">🏫</div>
+            <h2>NUEVA ESCUELA<br>MEXICANA</h2>
+            <p>Formación integral<br>del ciudadano</p>
+        </div>
+    </div>
+
+    <!-- 7 NODOS -->
+    <div class="nodo n-inclusion">
+        <div class="n-icon">🤝</div>
+        <h3>Inclusión</h3>
+        <p>Acceso equitativo para todos sin importar condición o capacidad</p>
+    </div>
+
+    <div class="nodo n-critico">
+        <div class="n-icon">🧠</div>
+        <h3>Pensamiento Crítico</h3>
+        <p>Analizar, cuestionar y construir juicios informados</p>
+    </div>
+
+    <div class="nodo n-interculturalidad">
+        <div class="n-icon">🌍</div>
+        <h3>Interculturalidad Crítica</h3>
+        <p>Valorar la diversidad cultural, étnica y lingüística</p>
+    </div>
+
+    <div class="nodo n-genero">
+        <div class="n-icon">⚖️</div>
+        <h3>Igualdad de Género</h3>
+        <p>Eliminar estereotipos y garantizar las mismas oportunidades</p>
+    </div>
+
+    <div class="nodo n-salud">
+        <div class="n-icon">💚</div>
+        <h3>Vida Saludable</h3>
+        <p>Bienestar físico, mental, emocional y ambiental</p>
+    </div>
+
+    <div class="nodo n-lectura">
+        <div class="n-icon">📖</div>
+        <h3>Lectura y Escritura</h3>
+        <p>Prácticas culturales para comprender y transformar el mundo</p>
+    </div>
+
+    <div class="nodo n-artes">
+        <div class="n-icon">🎨</div>
+        <h3>Artes y Experiencias Estéticas</h3>
+        <p>Creatividad, identidad y expresión emocional</p>
+    </div>
+
+    <!-- ETIQUETAS DE CONEXIÓN -->
+    <div class="etiqueta" style="top:90px; right:175px;">
+        Cuestionar prejuicios y estereotipos
+    </div>
+
+    <div class="etiqueta" style="top:90px; left:165px;">
+        El arte como vehículo de inclusión
+    </div>
+
+    <div class="etiqueta" style="top:340px; right:45px;">
+        Diálogo entre saberes y culturas
+    </div>
+
+    <div class="etiqueta" style="bottom:155px; right:50px;">
+        Cuestionar desigualdades históricas
+    </div>
+
+    <div class="etiqueta" style="bottom:110px; left:50%; transform:translateX(-50%);">
+        Salud sin brechas de género
+    </div>
+
+    <div class="etiqueta" style="bottom:155px; left:50px;">
+        Bienestar a través del arte y la cultura
+    </div>
+
+    <div class="etiqueta" style="top:340px; left:30px;">
+        Leer críticamente, escribir con identidad
+    </div>
+
+    <div class="etiqueta" style="top:450px; left:50%; transform:translateX(-50%);">
+        Preservar tradición oral y lenguas indígenas
+    </div>
+
+</div>
+
+<p class="footer-note">📚 Ejes Articuladores NEM · Los ejes se articulan transversalmente: cada uno potencia y complementa a los demás · Plan de Estudios 2022</p>
+
+</body>
+</html>
